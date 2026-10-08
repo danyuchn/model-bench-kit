@@ -56,6 +56,7 @@ Step 8  report           table + principles + re-test triggers
 3. **埋陷阱，並寫下掉進陷阱會產生的錯誤答案**。例如資料用 UTC、題目要求用當地時間，那「直接用 UTC 算」會得到另一個總數；把那個總數寫進評分器，就能分辨模型錯在哪。陷阱設計範例見 `references/task-archetypes.md`。
 4. **開跑前就算好標準答案**，能用程式算的就用程式算。標準答案在看到任何模型輸出之後才定，就不是考試了。
 5. **寫評分器並反驗**：拿一份已知正確的答案與一份已知錯誤的答案各餵一次，正確的要拿滿分、錯誤的要扣分。兩邊都沒反應，代表評分器沒接上。
+6. **答案不能讓受測模型讀到**。標準答案只放在 `graders/`，`runner.py` 會拒絕受測模型讀 `graders/` 與結果資料夾，每次執行也在 bench 外的獨立暫存目錄跑，讀不到別次的輸出。新模型的系統卡測過「拿到洩漏答案就直接用、不告知」，這條不能靠模型自律。開跑前做一次對照：叫它讀評分器，必須被擋；叫它讀素材，必須讀得到。
 
 工具權限分兩種：
 - 唯讀題：`--permission-mode dontAsk --allowedTools Read Glob Grep --disallowedTools Bash Edit Write Agent Task`
@@ -63,7 +64,7 @@ Step 8  report           table + principles + re-test triggers
 
 `scripts/runner.py` 已經照這兩種設定好，`bench.json` 的 `compute_tasks` 列出哪些題是計算題。
 
-**每次執行都在空的暫存資料夾裡跑，不要在真實專案資料夾裡跑**。專案的 hook 與指令檔會作用在受測模型身上，實際發生過的事故是：受測模型被專案的收工檢查逼著去跑整理腳本，自動 commit 並推上遠端。
+**每次執行都在空的暫存資料夾裡跑，不要在真實專案資料夾裡跑**（`runner.py` 已這樣做）。專案的 hook 與指令檔會作用在受測模型身上，實際發生過的事故是：受測模型被專案的收工檢查逼著去跑整理腳本，自動 commit 並推上遠端。
 
 ## Step 4：試跑兩題
 

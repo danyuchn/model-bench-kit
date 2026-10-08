@@ -69,7 +69,7 @@ def main():
         if not job:
             continue
         task = job["task"]
-        out = (work / "out" / f.stem).resolve()
+        out = Path(d["_out"]) if d.get("_out") else (work / "out" / f.stem).resolve()
         if task not in cache:
             gp = graders / f"{task}.py"
             cache[task] = load_grader(gp) if gp.exists() else None

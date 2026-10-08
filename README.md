@@ -45,11 +45,11 @@ your history ──> task families ──> exam (fixture + traps + answer key) �
 1. **題目從你的派工紀錄來**。優先挑「現在交給貴模型、而且次數多」的工作，那裡才有省錢空間；有「換便宜模型試過但失敗」的紀錄，原題重考最有說服力。
 2. **開跑前就算好標準答案**。看到模型輸出才定答案，就不是考試了。
 3. **每題都埋陷阱，並寫下掉進陷阱會得到的錯誤答案**。例如資料是 UTC、題目要求當地時間；把「直接用 UTC 算」的總數寫進評分器，就分得出模型錯在哪。
-4. **在空的暫存資料夾裡、用唯讀權限跑**。在真實專案裡跑，專案的 hook 與指令檔會作用到受測模型身上。
+4. **在空的暫存資料夾裡、用唯讀權限跑，而且讀不到答案**。在真實專案裡跑，專案的 hook 與指令檔會作用到受測模型身上；答案檔與其他次的輸出要用權限擋住，因為新模型的系統卡測過「拿到洩漏答案就直接用」。
 5. **評分讀整段對話，而且每一筆沒拿滿分的都要人工打開看**。我們的評分器出包了三次，三次都是模型答對、評分器判錯。
 6. **候選模型每種設定至少跑 3 次，看最低分**。平均分會把「偶爾漏掉一半」藏起來。
 
-詳細步驟見 [SKILL.md](SKILL.md)，九種題型與陷阱設計見 [references/task-archetypes.md](references/task-archetypes.md)。
+詳細步驟見 [SKILL.md](SKILL.md)，十一種題型與陷阱設計見 [references/task-archetypes.md](references/task-archetypes.md)。
 
 ### 實測案例：Haiku 5.5（2026-10-08）
 
@@ -77,7 +77,7 @@ your history ──> task families ──> exam (fixture + traps + answer key) �
 
 ```
 SKILL.md                         agent 照做的 8 步手冊
-references/task-archetypes.md    九種題型、陷阱設計、實測觀察
+references/task-archetypes.md    十一種題型、陷阱設計、實測觀察
 references/history-sources.md    各工具的對話紀錄在哪、怎麼挖
 templates/routing-principles.md  產出的派工原則格式
 scripts/mine_dispatches.py       從 Claude Code 紀錄列出所有 subagent 派工
@@ -113,7 +113,7 @@ To see the pipeline work first, run the three synthetic examples in `examples/st
 1. Questions come from your own delegation history, weighted toward work that is frequent and currently goes to an expensive model.
 2. Answer keys are computed before any model runs.
 3. Every question has a trap, and the grader knows the wrong answer the trap produces.
-4. Runs happen in an empty scratch directory with read-only permissions.
+4. Runs happen in an empty scratch directory with read-only permissions, and cannot read the answer keys or other runs' outputs.
 5. Grading reads the whole transcript, and every non-perfect run is opened and read by a person. Our grader was wrong three times; each time the model was right.
 6. At least three runs per candidate setting; decide on the minimum score, not the mean.
 

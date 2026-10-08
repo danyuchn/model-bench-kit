@@ -20,11 +20,13 @@ Finished jobs write results/<TASK>__<MODEL>-<EFFORT>__r<REP>.json and are skippe
 so the same command resumes after a crash. REP values starting with "p" add `mkdir` to the
 compute allow-list (use them for a permission-relaxed re-run).
 
-Every run is started in its own empty output directory, never inside a real project:
+Every run is started in its own empty temp directory outside the bench tree, never inside a real project,
+and cannot read graders/ (answer keys) or the work dir (other runs' results):
 project-level hooks and instructions would otherwise act on the model under test.
 """
 import json
 import subprocess
+import tempfile
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -51,8 +53,8 @@ def main():
         res = work / "results" / f"{tag}.json"
         if res.exists():
             return
-        out = (work / "out" / tag).resolve()
-        out.mkdir(parents=True, exist_ok=True)
+        # each run writes to its own temp dir outside the bench tree, so no run can read another's output
+        out = Path(tempfile.mkdtemp(prefix=f"bench-{tag}-")).resolve()
         prompt = ((tasks_dir / f"{task}.txt").read_text()
                   .replace("{{OUT}}", str(out)).replace("{{BENCH}}", str(base.resolve())))
         cmd = ["claude", "-p", "--model", model, "--effort", effort, "--output-format", "json",
@@ -64,6 +66,9 @@ def main():
         else:
             cmd += ["--allowedTools", "Read", "Glob", "Grep",
                     "--disallowedTools", "Bash", "Edit", "Write", "Agent", "Task"]
+        # answer keys and graded results must not be readable by the model under test
+        graders = (base / cfg.get("graders_dir", "graders")).resolve()
+        cmd += ["--disallowedTools", f"Read(/{graders}/**)", f"Read(/{work.resolve()}/**)"]
         log(f"start {tag}")
         t0 = time.time()
         try:
@@ -78,6 +83,7 @@ def main():
             data = {"is_error": True, "result": raw[-2000:]}
         data["_wall_s"] = round(time.time() - t0, 1)
         data["_job"] = {"task": task, "model": model, "effort": effort, "rep": rep}
+        data["_out"] = str(out)
         res.write_text(json.dumps(data, ensure_ascii=False, indent=1))
         log(f"done  {tag} cost={data.get('total_cost_usd')} turns={data.get('num_turns')} wall={data['_wall_s']}")
 
