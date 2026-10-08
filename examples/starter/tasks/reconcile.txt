@@ -1,0 +1,9 @@
+# 任務：金流對帳
+
+資料：{{BENCH}}/fixtures/charges.json （Stripe charges 匯出，created 為 Unix timestamp UTC）
+本帳戶規則：TWD 與 USD 的 amount、amount_refunded 都以 1/100 元為單位；只有 status 為 succeeded 的才算實收；淨額＝amount − amount_refunded（不扣 fee）。
+
+問題：以台北時間（UTC+8）計，2026 年 9 月份的實收淨額，TWD 與 USD 各多少？列出計入的 charge id，並說明每筆被排除的 charge 為什麼被排除。
+
+限制：Bash 只能用來跑 python3，不得修改任何既有檔案，要存檔只能寫到 {{OUT}} 底下。禁止讀取任何真實憑證。
+最後一行寫「TWD: x / USD: y」。

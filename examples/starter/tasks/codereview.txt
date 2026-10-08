@@ -1,0 +1,7 @@
+# 任務：程式驗收
+
+{{BENCH}}/fixtures/check_invoices.py 是一支把關用的檢查程式，它的 docstring 說明了應有行為。
+
+審查它的正確性：找出會讓它「放過不該過的資料」、「擋下不該擋的資料」或「與 docstring 不一致」的 bug。每個 bug 寫：行號、問題、具體會造成什麼錯誤結果、修法。只報真正的 bug，風格問題不要報。
+只能用 Read／Glob／Grep 讀檔，不要執行 Bash、不要改任何檔案。
+最後一行寫「bug 總數：N」。

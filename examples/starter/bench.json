@@ -1,0 +1,9 @@
+{
+  "tasks_dir": "tasks",
+  "graders_dir": "graders",
+  "work_dir": "runs",
+  "workers": 2,
+  "budget_usd_per_run": 2,
+  "timeout_s": 900,
+  "compute_tasks": ["reconcile"]
+}
